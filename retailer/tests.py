@@ -5,6 +5,14 @@ from django.db import transaction, IntegrityError
 from retailer import models
 
 
+@pytest.fixture(autouse=True)
+def clean():
+    models.Retailer.objects.using('default').all().delete()
+    models.Retailer.objects.using('secondary').all().delete()
+    models.Outlet.objects.using('secondary').all().delete()
+    models.Outlet.objects.using('default').all().delete()
+
+
 def _create_success():
     retailer = models.Retailer.objects.using('default').create(name="retailer")
     models.Outlet.objects.using('secondary').create(name="Outlet 1", retailer_id=retailer.id)
